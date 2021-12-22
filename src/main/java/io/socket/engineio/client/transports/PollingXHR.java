@@ -11,6 +11,7 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import io.socket.cookie.MemoryCookieJar;
 import io.socket.emitter.Emitter;
 import io.socket.engineio.client.Transport;
 import io.socket.thread.EventThread;
@@ -29,8 +30,11 @@ public class PollingXHR extends Polling {
 
     private static boolean LOGGABLE_FINE = logger.isLoggable(Level.FINE);
 
+    private static MemoryCookieJar memoryCookieJar;
+
     public PollingXHR(Transport.Options opts) {
         super(opts);
+        if (opts.enablePollingCookies) memoryCookieJar = new MemoryCookieJar();
     }
 
     protected Request request() {
@@ -176,7 +180,7 @@ public class PollingXHR extends Polling {
             }
 
             headers.put("Accept", new LinkedList<String>(Collections.singletonList("*/*")));
-
+            headers.putAll(memoryCookieJar.loadForRequest(response.request().url()));
             this.onRequestHeaders(headers);
 
             if (LOGGABLE_FINE) {
@@ -209,6 +213,7 @@ public class PollingXHR extends Polling {
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     self.response = response;
+                    if (memoryCookieJar != null) memoryCookieJar.saveFromResponse(call, response);
                     self.onResponseHeaders(response.headers().toMultimap());
 
                     try {

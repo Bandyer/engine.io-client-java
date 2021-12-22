@@ -143,6 +143,7 @@ public abstract class Transport extends Emitter {
         public String timestampParam;
         public boolean secure;
         public boolean timestampRequests;
+        public boolean enablePollingCookies = true;
         public int port = -1;
         public int policyPort = -1;
         public Map<String, String> query;
