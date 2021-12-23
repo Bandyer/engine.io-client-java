@@ -126,6 +126,7 @@ public class Socket extends Emitter {
     private okhttp3.WebSocket.Factory webSocketFactory;
     private okhttp3.Call.Factory callFactory;
     private final Map<String, List<String>> extraHeaders;
+    private boolean enablePollingCookies;
 
     private ReadyState readyState;
     private ScheduledExecutorService heartbeatScheduler;
@@ -218,6 +219,7 @@ public class Socket extends Emitter {
             webSocketFactory = defaultOkHttpClient;
         }
         this.extraHeaders = opts.extraHeaders;
+        this.enablePollingCookies = opts.enablePollingCookies;
     }
 
     public static void setDefaultOkHttpWebSocketFactory(okhttp3.WebSocket.Factory factory) {
@@ -291,6 +293,7 @@ public class Socket extends Emitter {
         opts.callFactory = options != null ? options.callFactory : this.callFactory;
         opts.webSocketFactory = options != null ? options.webSocketFactory : this.webSocketFactory;
         opts.extraHeaders = this.extraHeaders;
+        opts.enablePollingCookies = this.enablePollingCookies;
 
         Transport transport;
         if (WebSocket.NAME.equals(name)) {

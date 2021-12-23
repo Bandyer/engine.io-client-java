@@ -45,6 +45,7 @@ public abstract class Transport extends Emitter {
     protected WebSocket.Factory webSocketFactory;
     protected Call.Factory callFactory;
     protected Map<String, List<String>> extraHeaders;
+    protected boolean enablePollingCookies;
 
     public Transport(Options opts) {
         this.path = opts.path;
@@ -58,6 +59,7 @@ public abstract class Transport extends Emitter {
         this.webSocketFactory = opts.webSocketFactory;
         this.callFactory = opts.callFactory;
         this.extraHeaders = opts.extraHeaders;
+        this.enablePollingCookies = opts.enablePollingCookies;
     }
 
     protected Transport onError(String msg, Exception desc) {
@@ -143,7 +145,6 @@ public abstract class Transport extends Emitter {
         public String timestampParam;
         public boolean secure;
         public boolean timestampRequests;
-        public boolean enablePollingCookies = true;
         public int port = -1;
         public int policyPort = -1;
         public Map<String, String> query;
@@ -151,5 +152,6 @@ public abstract class Transport extends Emitter {
         public WebSocket.Factory webSocketFactory;
         public Call.Factory callFactory;
         public Map<String, List<String>> extraHeaders;
+        public boolean enablePollingCookies = true;
     }
 }

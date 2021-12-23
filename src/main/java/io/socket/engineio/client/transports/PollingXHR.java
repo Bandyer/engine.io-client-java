@@ -180,7 +180,7 @@ public class PollingXHR extends Polling {
             }
 
             headers.put("Accept", new LinkedList<String>(Collections.singletonList("*/*")));
-            headers.putAll(memoryCookieJar.loadForRequest(response.request().url()));
+            if (memoryCookieJar != null) headers.putAll(memoryCookieJar.loadForRequest(HttpUrl.get(uri)));
             this.onRequestHeaders(headers);
 
             if (LOGGABLE_FINE) {
