@@ -1,33 +1,32 @@
 package io.socket.cookie;
 
-import okhttp3.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import java.util.*;
+import okhttp3.Call;
+import okhttp3.Cookie;
+import okhttp3.HttpUrl;
+import okhttp3.Response;
 
 public class MemoryCookieJar {
 
-    private final Set<WrappedCookie> cache = new HashSet<>();
+    private final HashMap<String, WrappedCookie> cache = new HashMap<>();
 
     synchronized public void saveFromResponse(Call call, Response response) {
         List<Cookie> list = Cookie.parseAll(call.request().url(), response.headers());
-        List<WrappedCookie> cookiesToAdd = new ArrayList<>(list.size());
-        for (Cookie cookie : list) {
-            cookiesToAdd.add(WrappedCookie.wrap(cookie));
-        }
-        cache.removeAll(cookiesToAdd);
-        cache.addAll(cookiesToAdd);
+        for (Cookie cookie : list) cache.put(cookie.name(), WrappedCookie.wrap(cookie));
     }
 
     synchronized public Map<String, List<String>> loadForRequest(HttpUrl httpUrl) {
-        Set<WrappedCookie> cookiesToRemove = new HashSet<>(cache.size());
         List<String> validCookies = new ArrayList<>(cache.size());
 
-        for (WrappedCookie cookie : cache) {
-            if (cookie.isExpired()) cookiesToRemove.add(cookie);
-            else if (cookie.matches(httpUrl)) validCookies.add(cookie.unwrap().toString());
+        for (Map.Entry<String, WrappedCookie> cookie : cache.entrySet()) {
+            if (cookie.getValue().isExpired()) cache.remove(cookie.getKey());
+            else if (cookie.getValue().matches(httpUrl)) validCookies.add(cookie.getValue().unwrap().toString());
         }
 
-        cache.removeAll(cookiesToRemove);
         Map<String, List<String>> header = new HashMap<>(1);
         if (validCookies.isEmpty()) return header;
         header.put("Cookie", validCookies);
