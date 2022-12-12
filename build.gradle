@@ -33,7 +33,7 @@ java {
 }
 
 
-def projectGroup = "com.bandyer"
+def projectGroup = "com.kaleyra"
 def libVersion = "2.0.0"
 
 Properties properties = new Properties()
